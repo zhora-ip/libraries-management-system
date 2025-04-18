@@ -6,23 +6,30 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	bSvc "github.com/zhora-ip/libraries-management-system/intenal/app/service/book"
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
+	svc "github.com/zhora-ip/libraries-management-system/intenal/models/service"
 )
 
 type bookService interface {
-	Add(context.Context, *bSvc.AddBookRequest) (*bSvc.AddBookResponse, error)
+	Add(context.Context, *svc.AddBookRequest) (*svc.AddBookResponse, error)
+	FindAll(context.Context, *svc.FindAllRequest) (*svc.FindAllResponse, error)
+}
+
+type userService interface {
+	Add(context.Context, *svc.AddUserRequest) (*svc.AddUserResponse, error)
 }
 
 type Server struct {
 	router   *mux.Router
 	bService bookService
+	uService userService
 }
 
-func New(bs bookService) *Server {
+func New(bs bookService, us userService) *Server {
 	srv := &Server{
 		router:   mux.NewRouter(),
 		bService: bs,
+		uService: us,
 	}
 
 	srv.configureRouter()

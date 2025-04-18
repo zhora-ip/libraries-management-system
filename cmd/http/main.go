@@ -30,6 +30,7 @@ func main() {
 	cfg := &app.Config{
 		DatabaseURL: databaseURL,
 	}
+	
 	if err := app.Start(cfg); err != nil {
 		log.Fatal(err)
 	}

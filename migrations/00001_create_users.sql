@@ -3,9 +3,9 @@
 create table if not exists users (
     id BIGSERIAL primary key,
     login TEXT not null unique,
-    password_hash TEXT not null,
+    encrypted_password TEXT not null,
     full_name TEXT not null,
-    phone_number TEXT,
+    phone_number TEXT unique,
     email TEXT unique,
     created_at TIMESTAMP not null default now(),
     updated_at TIMESTAMP not null default now()

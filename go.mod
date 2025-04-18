@@ -11,6 +11,8 @@ require (
 )
 
 require (
+	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
+	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible // indirect
 	github.com/gofrs/flock v0.12.1 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -18,8 +20,10 @@ require (
 	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgtype v1.14.0 // indirect
+	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/crypto v0.20.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect

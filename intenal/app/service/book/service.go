@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
+	svc "github.com/zhora-ip/libraries-management-system/intenal/models/service"
 )
 
 type booksRepo interface {
 	Add(context.Context, *models.Book) (int64, error)
+	FindAll(context.Context, *svc.FindAllRequest) (*svc.FindAllResponse, error)
 }
 
 type txManager interface {
@@ -15,7 +17,7 @@ type txManager interface {
 }
 
 type BookService struct {
-	booksRepo
+	booksRepo booksRepo
 	txManager txManager
 }
 

@@ -5,8 +5,8 @@ create table if not exists libraries(
     name TEXT not null,
     address TEXT not null,
     phone_number TEXT,
-    latitude DOUBLE PRECISION not null,
-    longitude DOUBLE PRECISION not null,
+    lat DOUBLE PRECISION not null,
+    lng DOUBLE PRECISION not null,
     created_at TIMESTAMP not null default now(),
     updated_at TIMESTAMP not null default now()
 );

@@ -10,8 +10,10 @@ import (
 
 	"github.com/zhora-ip/libraries-management-system/intenal/app/http_app/server"
 	bookservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/book"
+	userservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/user"
 	sqldb "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/db"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/books"
+	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/users"
 )
 
 const (
@@ -32,7 +34,10 @@ func Start(cfg *Config) error {
 	bRepo := books.NewBooks(db)
 	bService := bookservice.New(bRepo, db.GetTM())
 
-	srv := server.New(bService)
+	uRepo := users.NewUsers(db)
+	uService := userservice.New(uRepo, db.GetTM())
+
+	srv := server.New(bService, uService)
 	err = runServer(srv)
 
 	return err
