@@ -9,5 +9,5 @@ type AddUserRequest struct {
 }
 
 type AddUserResponse struct {
-	ID int64
+	ID int64 `json:"id"`
 }

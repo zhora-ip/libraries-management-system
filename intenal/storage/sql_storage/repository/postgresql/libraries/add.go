@@ -15,8 +15,8 @@ func (r *LibrariesRepo) Add(ctx context.Context, library *models.Library) (int64
 				name,
 				address,
 				phone_number,
-				latitude,
-				longitude
+				lat,
+				lng
 			)
 			VALUES($1,$2,$3,$4,$5)
 			RETURNING id;`,

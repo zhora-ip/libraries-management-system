@@ -12,24 +12,38 @@ import (
 
 type bookService interface {
 	Add(context.Context, *svc.AddBookRequest) (*svc.AddBookResponse, error)
-	FindAll(context.Context, *svc.FindAllRequest) (*svc.FindAllResponse, error)
+	FindAll(context.Context, *svc.FindAllBooksRequest) (*svc.FindAllBooksResponse, error)
 }
 
 type userService interface {
 	Add(context.Context, *svc.AddUserRequest) (*svc.AddUserResponse, error)
 }
 
-type Server struct {
-	router   *mux.Router
-	bService bookService
-	uService userService
+type physBookService interface {
+	FindByBookID(context.Context, int64) (*svc.FindPBookByBookIDResponse, error)
 }
 
-func New(bs bookService, us userService) *Server {
+type orderService interface {
+	Add(context.Context, *svc.AddOrderRequest) (*svc.AddOrderResponse, error)
+	Issue(context.Context, *svc.IssueOrderRequest) (*svc.IssueOrderResponse, error)
+	Return(context.Context, *svc.ReturnOrderRequest) (*svc.ReturnOrderResponse, error)
+}
+
+type Server struct {
+	router    *mux.Router
+	bService  bookService
+	uService  userService
+	pbService physBookService
+	oService  orderService
+}
+
+func New(bs bookService, us userService, pbs physBookService, os orderService) *Server {
 	srv := &Server{
-		router:   mux.NewRouter(),
-		bService: bs,
-		uService: us,
+		router:    mux.NewRouter(),
+		bService:  bs,
+		uService:  us,
+		pbService: pbs,
+		oService:  os,
 	}
 
 	srv.configureRouter()

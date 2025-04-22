@@ -19,15 +19,17 @@ func (r *UsersRepo) Add(ctx context.Context, user *models.User) (int64, error) {
 				encrypted_password,
 				full_name,
 				phone_number,
-				email
+				email,
+				role
 			)
-			VALUES($1,$2,$3,$4,$5)
+			VALUES($1,$2,$3,$4,$5,$6)
 			RETURNING id;`,
 		user.Login,
 		user.EncryptedPassword,
 		user.FullName,
 		user.PhoneNumber,
 		user.Email,
+		user.Role,
 	).Scan(&ID)
 
 	if err != nil {

@@ -2,17 +2,21 @@ package models
 
 import "time"
 
-type Status int
+type Status int32
 
 const (
 	StatusUnknown   Status = iota // 0
 	StatusAvailable               // 1
 	StatusExpired                 // 2
 	StatusIssued                  // 3
-	Unknown         = "UNKNOWN"
-	Available       = "AVAILABLE"
-	Expired         = "EXPIRED"
-	Issued          = "ISSUED"
+	StatusCanceled
+	StatusReturned
+	Unknown   = "UNKNOWN"
+	Available = "AVAILABLE"
+	Expired   = "EXPIRED"
+	Issued    = "ISSUED"
+	Canceled  = "CANCELED"
+	Returned  = "RETURNED"
 )
 
 func (s Status) String() string {
@@ -21,6 +25,8 @@ func (s Status) String() string {
 		Available,
 		Expired,
 		Issued,
+		Canceled,
+		Returned,
 	}[s]
 }
 

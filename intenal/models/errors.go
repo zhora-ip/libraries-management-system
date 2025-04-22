@@ -4,9 +4,7 @@ import "errors"
 
 var (
 	ErrObjectNotFound           = errors.New("not found")
-	ErrPastExpiryDate           = errors.New("past expiry date")
 	ErrValidationFailed         = errors.New("validation failed")
-	ErrPackFailed               = errors.New("pack failed")
 	ErrNotExpired               = errors.New("not expired")
 	ErrAlreadyIssued            = errors.New("already issued")
 	ErrForbidden                = errors.New("forbidden")
@@ -20,4 +18,9 @@ var (
 	ErrEmailAlreadyExists       = errors.New("such email already exists")
 	ErrLoginAlreadyExists       = errors.New("such login already exists")
 	ErrPhoneNumberAlreadyExists = errors.New("such phone number already exists")
+	ErrAlreadyAvailable         = errors.New("physical book already available")
+	ErrAlreadyUnavailable       = errors.New("physical book already unavailable")
+	ErrLibCardExpired           = errors.New("library card expired")
+	ErrIncorrectOrderStatus     = errors.New("incorrect order status")
+	ErrNoRows                   = errors.New("now rows")
 )

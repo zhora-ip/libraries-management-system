@@ -36,19 +36,19 @@ func (s *Server) handleAddUserHelper(ctx context.Context, req *svc.AddUserReques
 
 	resp, err := s.uService.Add(ctx, req)
 	if err != nil {
+		log.Print(err)
 		switch {
 		case errors.Is(err, models.ErrValidationFailed):
-			return nil, http.StatusBadRequest, err
+			return nil, http.StatusBadRequest, models.ErrValidationFailed
 		case errors.Is(err, models.ErrEncryptionFailed):
-			return nil, http.StatusInternalServerError, err
+			return nil, http.StatusInternalServerError, models.ErrEncryptionFailed
 		case errors.Is(err, models.ErrEmailAlreadyExists):
-			return nil, http.StatusBadRequest, err
+			return nil, http.StatusBadRequest, models.ErrEmailAlreadyExists
 		case errors.Is(err, models.ErrPhoneNumberAlreadyExists):
-			return nil, http.StatusBadRequest, err
+			return nil, http.StatusBadRequest, models.ErrPhoneNumberAlreadyExists
 		case errors.Is(err, models.ErrLoginAlreadyExists):
-			return nil, http.StatusBadRequest, err
+			return nil, http.StatusBadRequest, models.ErrLoginAlreadyExists
 		}
-		log.Print(err)
 		return nil, http.StatusInternalServerError, nil
 	}
 	return resp, http.StatusOK, nil

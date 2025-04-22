@@ -9,7 +9,7 @@ import (
 
 type booksRepo interface {
 	Add(context.Context, *models.Book) (int64, error)
-	FindAll(context.Context, *svc.FindAllRequest) (*svc.FindAllResponse, error)
+	FindAll(context.Context, *svc.FindAllBooksRequest) (*svc.FindAllBooksResponse, error)
 }
 
 type txManager interface {

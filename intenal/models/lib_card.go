@@ -7,4 +7,5 @@ type LibCard struct {
 	Code      string     `db:"code"`
 	UserID    int64      `db:"user_id"`
 	CreatedAt *time.Time `db:"created_at"`
+	ExpiresAt *time.Time `db:"expires_at"`
 }

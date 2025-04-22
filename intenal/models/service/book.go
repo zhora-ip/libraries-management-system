@@ -11,12 +11,12 @@ type AddBookRequest struct {
 }
 
 type AddBookResponse struct {
-	ID int64
+	ID int64 `json:"id"`
 }
 
-type FindAllRequest struct {
+type FindAllBooksRequest struct {
 }
 
-type FindAllResponse struct {
-	Data []*models.Book
+type FindAllBooksResponse struct {
+	Data []*models.Book `json:"data"`
 }

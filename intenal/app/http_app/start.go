@@ -7,12 +7,19 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/app/http_app/server"
 	bookservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/book"
+	orderservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/order"
+	physbookservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/phys_books"
 	userservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/user"
 	sqldb "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/db"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/books"
+	libcards "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/lib_cards"
+	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/libraries"
+	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/orders"
+	physbooks "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/physical_books"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/users"
 )
 
@@ -32,19 +39,26 @@ func Start(cfg *Config) error {
 	defer db.GetPool().Close()
 
 	bRepo := books.NewBooks(db)
-	bService := bookservice.New(bRepo, db.GetTM())
-
+	lRepo := libraries.NewLibraries(db)
+	lcRepo := libcards.NewLibCards(db)
 	uRepo := users.NewUsers(db)
-	uService := userservice.New(uRepo, db.GetTM())
+	pbRepo := physbooks.NewPhysBooks(db)
+	oRepo := orders.NewOrders(db)
 
-	srv := server.New(bService, uService)
+	bService := bookservice.New(bRepo, db.GetTM())
+	uService := userservice.New(uRepo, lcRepo, db.GetTM())
+	pbService := physbookservice.New(pbRepo, lRepo, db.GetTM())
+	oService := orderservice.New(pbRepo, oRepo, lcRepo, db.GetTM())
+
+	srv := server.New(bService, uService, pbService, oService)
+
+	go runExpiredOrdersCron(ctx, oService)
 	err = runServer(srv)
-
 	return err
-
 }
 
 func runServer(srv *server.Server) error {
+
 	errCh := make(chan error, 1)
 	go func() {
 		log.Print("Server is up and running")
@@ -67,4 +81,21 @@ func runServer(srv *server.Server) error {
 	log.Print("Server exited gracefully")
 
 	return nil
+}
+
+func runExpiredOrdersCron(ctx context.Context, oService *orderservice.OrderService) {
+	ticker := time.NewTicker(time.Second * timeoutCheckExpired)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			err := oService.CheckCanceled(ctx)
+			if err != nil {
+				log.Print(err)
+			}
+		}
+	}
 }

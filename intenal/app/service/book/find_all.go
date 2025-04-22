@@ -6,6 +6,6 @@ import (
 	svc "github.com/zhora-ip/libraries-management-system/intenal/models/service"
 )
 
-func (s *BookService) FindAll(ctx context.Context, req *svc.FindAllRequest) (*svc.FindAllResponse, error) {
+func (s *BookService) FindAll(ctx context.Context, req *svc.FindAllBooksRequest) (*svc.FindAllBooksResponse, error) {
 	return s.booksRepo.FindAll(ctx, req)
 }

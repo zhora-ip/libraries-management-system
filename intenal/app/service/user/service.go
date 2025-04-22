@@ -10,18 +10,24 @@ type usersRepo interface {
 	Add(context.Context, *models.User) (int64, error)
 }
 
+type libCardsRepo interface {
+	Add(context.Context, *models.LibCard) (int64, error)
+}
+
 type txManager interface {
 	RunSerializable(context.Context, func(context.Context) error) error
 }
 
 type UserService struct {
-	usersRepo usersRepo
+	uRepo     usersRepo
+	lcRepo    libCardsRepo
 	txManager txManager
 }
 
-func New(repo usersRepo, tm txManager) *UserService {
+func New(uRepo usersRepo, lcRepo libCardsRepo, tm txManager) *UserService {
 	return &UserService{
-		usersRepo: repo,
+		uRepo:     uRepo,
+		lcRepo:    lcRepo,
 		txManager: tm,
 	}
 }

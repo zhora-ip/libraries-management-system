@@ -8,6 +8,27 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type UserRole int32
+
+const (
+	UserRoleUnknown   UserRole = iota // 0
+	UserRoleAdmin                     // 1
+	UserRoleLibrarian                 // 2
+	UserRoleReader                    // 3
+	Admin             = "ADMIN"
+	Librarian         = "LIBRARIAN"
+	Reader            = "READER"
+)
+
+func (u UserRole) String() string {
+	return [...]string{
+		Unknown,
+		Admin,
+		Librarian,
+		Reader,
+	}[u]
+}
+
 type User struct {
 	ID                int64      `db:"id"`
 	Login             string     `db:"login"`
@@ -16,6 +37,7 @@ type User struct {
 	FullName          string     `db:"full_name"`
 	PhoneNumber       string     `db:"phone_number"`
 	Email             string     `db:"email"`
+	Role              UserRole   `db:"role"`
 	CreatedAt         *time.Time `db:"created_at"`
 	UpdatedAt         *time.Time `db:"updated_at"`
 }

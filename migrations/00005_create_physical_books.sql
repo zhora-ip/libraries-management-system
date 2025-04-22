@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 create table if not exists physical_books(
     id BIGSERIAL primary key,
-    library_id BIGINT not null REFERENCES library(id),
+    library_id BIGINT not null REFERENCES libraries(id),
     book_id BIGINT not null REFERENCES books(id),
     is_available BOOLEAN not null default true,
     created_at TIMESTAMP not null default now(),

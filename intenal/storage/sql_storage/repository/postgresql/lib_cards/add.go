@@ -13,12 +13,14 @@ func (r *LibCardsRepo) Add(ctx context.Context, libCard *models.LibCard) (int64,
 		`INSERT INTO
 			lib_cards(
 				code,
-				user_id
+				user_id,
+				expires_at
 			)
-			VALUES($1,$2)
+			VALUES($1,$2,$3)
 			RETURNING id;`,
 		libCard.Code,
 		libCard.UserID,
+		libCard.ExpiresAt,
 	).Scan(&ID)
 
 	return ID, err

@@ -16,7 +16,7 @@ func (r *PhysBooksRepo) Add(ctx context.Context, book *models.PhysBook) (int64, 
 				book_id,
 				is_available
 			)
-			VALUES($1,$2)
+			VALUES($1,$2,$3)
 			RETURNING id;`,
 		book.LibraryID,
 		book.BookID,
