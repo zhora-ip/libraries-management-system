@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"log"
 
+	kafkaservice "github.com/zhora-ip/libraries-management-system/infrastructure/kafka"
 	app "github.com/zhora-ip/libraries-management-system/intenal/app/http_app"
 	sqldb "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/db"
 	"github.com/zhora-ip/libraries-management-system/pkg"
 )
 
 var (
-	pathDB = "configs/database.yaml"
+	pathDB    = "configs/database.yaml"
+	pathKafka = "configs/kafka.yaml"
 )
 
 func main() {
@@ -30,8 +32,11 @@ func main() {
 	cfg := &app.Config{
 		DatabaseURL: databaseURL,
 	}
-	
-	if err := app.Start(cfg); err != nil {
+
+	kafkaCfg := &kafkaservice.Config{}
+	pkg.ParseConfig(kafkaCfg, pathKafka)
+
+	if err := app.Start(cfg, kafkaCfg); err != nil {
 		log.Fatal(err)
 	}
 }

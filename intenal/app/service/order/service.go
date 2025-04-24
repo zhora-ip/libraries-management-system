@@ -31,18 +31,29 @@ type txManager interface {
 	RunSerializable(context.Context, func(context.Context) error) error
 }
 
+type workerPool interface {
+	Submit(any, chan<- error)
+}
+
 type OrderService struct {
 	pbRepo    physBooksRepo
 	oRepo     ordersRepo
 	lcRepo    libCardsRepo
 	txManager txManager
+	audit     workerPool
 }
 
-func New(pbRepo physBooksRepo, oRepo ordersRepo, lcRepo libCardsRepo, tm txManager) *OrderService {
+func New(pbRepo physBooksRepo, oRepo ordersRepo, lcRepo libCardsRepo, tm txManager, wp workerPool) *OrderService {
 	return &OrderService{
 		pbRepo:    pbRepo,
 		oRepo:     oRepo,
 		lcRepo:    lcRepo,
 		txManager: tm,
+		audit:     wp,
 	}
+}
+
+// Submit sends a task for processing
+func (o *OrderService) Submit(l any, errCh chan<- error) {
+	o.audit.Submit(l, errCh)
 }

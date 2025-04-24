@@ -3,13 +3,14 @@ module github.com/zhora-ip/libraries-management-system
 go 1.23.2
 
 require (
+	github.com/confluentinc/confluent-kafka-go/v2 v2.10.0
 	github.com/georgysavva/scany v1.2.3
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/gorilla/mux v1.8.1
 	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v4 v4.18.3
-	golang.org/x/crypto v0.20.0
+	golang.org/x/crypto v0.27.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 

@@ -28,6 +28,7 @@ type orderService interface {
 	Issue(context.Context, *svc.IssueOrderRequest) (*svc.IssueOrderResponse, error)
 	Return(context.Context, *svc.ReturnOrderRequest) (*svc.ReturnOrderResponse, error)
 	FindAll(context.Context, *svc.FindAllOrdersRequest) (*svc.FindAllOrdersResponse, error)
+	Submit(any, chan<- error)
 }
 
 type Server struct {

@@ -1,0 +1,5 @@
+topic: audit
+server: localhost:9091,localhost:9092,localhost:9093
+group_id: log-group
+offset_reset: earliest
+log_level: 0

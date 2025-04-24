@@ -5,15 +5,18 @@ import (
 )
 
 func (s *Server) configureRouter() {
-	s.router.HandleFunc("/books", s.HandleAddBook()).Methods(http.MethodPost)
-	s.router.HandleFunc("/books", s.HandleGetBooks()).Methods(http.MethodGet)
+	r := s.router.NewRoute().Subrouter()
+	r.Use(s.logger)
 
-	s.router.HandleFunc("/reg", s.HandleAddUser()).Methods(http.MethodPost)
+	r.HandleFunc("/books", s.HandleAddBook()).Methods(http.MethodPost)
+	r.HandleFunc("/books", s.HandleGetBooks()).Methods(http.MethodGet)
 
-	s.router.HandleFunc("/physbooks", s.HandleGetPhysBooks()).Methods(http.MethodGet)
+	r.HandleFunc("/reg", s.HandleAddUser()).Methods(http.MethodPost)
 
-	s.router.HandleFunc("/orders", s.HandleAddOrder()).Methods(http.MethodPost)
-	s.router.HandleFunc("/issue", s.HandleIssueOrder()).Methods(http.MethodPost)
-	s.router.HandleFunc("/return", s.HandleReturnOrder()).Methods(http.MethodPost)
-	s.router.HandleFunc("/history", s.HandleGetHistory()).Methods(http.MethodGet)
+	r.HandleFunc("/physbooks", s.HandleGetPhysBooks()).Methods(http.MethodGet)
+
+	r.HandleFunc("/orders", s.HandleAddOrder()).Methods(http.MethodPost)
+	r.HandleFunc("/issue", s.HandleIssueOrder()).Methods(http.MethodPost)
+	r.HandleFunc("/return", s.HandleReturnOrder()).Methods(http.MethodPost)
+	r.HandleFunc("/history", s.HandleGetHistory()).Methods(http.MethodGet)
 }
