@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
+	svc "github.com/zhora-ip/libraries-management-system/intenal/models/service"
 )
 
 type physBooksRepo interface {
@@ -19,6 +20,7 @@ type ordersRepo interface {
 	FindCanceled(context.Context) ([]*models.Order, error)
 	MarkAsCanceled(context.Context, int64) error
 	MarkAsReturned(context.Context, int64) error
+	FindAll(context.Context, *svc.FindAllOrdersRequest) ([]*models.Order, error)
 }
 
 type libCardsRepo interface {
