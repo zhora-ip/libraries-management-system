@@ -13,13 +13,17 @@ import (
 
 func (s *Server) HandleAddOrder() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		req := &svc.AddOrderRequest{}
+		var (
+			userID = r.Context().Value(ctxKeyUserID{}).(int64)
+			req    = &svc.AddOrderRequest{}
+		)
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			s.error(w, http.StatusBadRequest, nil)
 			log.Print(err)
 			return
 		}
+		req.UserID = userID
 
 		resp, status, err := s.handleAddOrderHelper(r.Context(), req)
 		if resp != nil {

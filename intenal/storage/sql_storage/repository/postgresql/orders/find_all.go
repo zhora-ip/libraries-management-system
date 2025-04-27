@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"slices"
 
 	"github.com/jackc/pgx"
@@ -52,8 +51,6 @@ func (r *OrdersRepo) FindAll(ctx context.Context, req *svc.FindAllOrdersRequest)
 		orderBy,
 		limit,
 	)
-
-	log.Print(query)
 
 	err := r.db.Select(
 		ctx,

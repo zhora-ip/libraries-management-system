@@ -28,7 +28,7 @@ func (s *UserService) Add(ctx context.Context, req *svc.AddUserRequest) (*svc.Ad
 			FullName:    req.FullName,
 			PhoneNumber: req.PhoneNumber,
 			Email:       req.Email,
-			Role:        models.UserRoleReader,
+			Role:        models.UserRole(req.Role),
 		}
 
 		if err := user.Validate(); err != nil {

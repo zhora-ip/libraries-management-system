@@ -2,13 +2,20 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
+)
+
+type (
+	ctxKeyUserID   struct{}
+	ctxKeyUserRole struct{}
 )
 
 func (s *Server) logger(next http.Handler) http.Handler {
@@ -46,5 +53,24 @@ func (s *Server) logger(next http.Handler) http.Handler {
 		}
 
 		s.oService.Submit(auditResponse, nil)
+	})
+}
+
+func (s *Server) userIdentity(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		token := r.Header.Get("Authorization")
+
+		user, role, err := s.tkManager.Parse(token)
+		if err != nil {
+			log.Print(err)
+			s.error(w, http.StatusBadRequest, nil)
+			return
+		}
+
+		ctx := context.WithValue(context.Background(), ctxKeyUserID{}, user)
+		ctx = context.WithValue(ctx, ctxKeyUserRole{}, role)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

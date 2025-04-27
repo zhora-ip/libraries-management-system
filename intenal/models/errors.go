@@ -10,6 +10,7 @@ var (
 	ErrForbidden        = errors.New("forbidden")
 	ErrAlreadyExpired   = errors.New("already expired")
 	ErrNotIssued        = errors.New("not issued")
+	ErrInvalidRole      = errors.New("invalid role")
 
 	ErrTimeParse = errors.New("incorrect time")
 	ErrIntParse  = errors.New("incorrect int")

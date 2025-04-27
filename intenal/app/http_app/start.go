@@ -12,6 +12,7 @@ import (
 	kafkaservice "github.com/zhora-ip/libraries-management-system/infrastructure/kafka"
 	kafkaConsumer "github.com/zhora-ip/libraries-management-system/infrastructure/kafka/consumer"
 	kafkaProducer "github.com/zhora-ip/libraries-management-system/infrastructure/kafka/producer"
+	auth "github.com/zhora-ip/libraries-management-system/pkg/token_manager"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/app/audit"
 	"github.com/zhora-ip/libraries-management-system/intenal/app/http_app/server"
@@ -53,6 +54,11 @@ func Start(cfg *Config, kafkaCfg *kafkaservice.Config) error {
 	}
 	defer db.GetPool().Close()
 
+	tkManager, err := auth.NewManager(os.Getenv("JWT_SECRET"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	aRepo := auditlogs.NewAuditLogs(db)
 	tRepo := tasks.NewTasks(db)
 	bRepo := books.NewBooks(db)
@@ -72,7 +78,7 @@ func Start(cfg *Config, kafkaCfg *kafkaservice.Config) error {
 	shutdowners = append(shutdowners, wPool2)
 
 	bService := bookservice.New(bRepo, db.GetTM())
-	uService := userservice.New(uRepo, lcRepo, db.GetTM())
+	uService := userservice.New(uRepo, lcRepo, db.GetTM(), tkManager)
 	pbService := physbookservice.New(pbRepo, lRepo, db.GetTM())
 	oService := orderservice.New(pbRepo, oRepo, lcRepo, db.GetTM(), wPool2)
 
@@ -96,7 +102,7 @@ func Start(cfg *Config, kafkaCfg *kafkaservice.Config) error {
 		go aConsumer.Consume(ctx)
 	}
 
-	srv := server.New(bService, uService, pbService, oService)
+	srv := server.New(bService, uService, pbService, oService, tkManager)
 
 	go runCanceledOrdersCron(ctx, oService)
 	err = runServer(srv, shutdowners)

@@ -19,17 +19,21 @@ const (
 func (s *Server) HandleGetHistory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		req := &svc.FindAllOrdersRequest{
-			Cursor:   time.Now(),
-			Limit:    getHistoryLimit,
-			Backward: false,
-		}
+		var (
+			userID = r.Context().Value(ctxKeyUserID{}).(int64)
+			req    = &svc.FindAllOrdersRequest{
+				Cursor:   time.Now(),
+				Limit:    getHistoryLimit,
+				Backward: false,
+			}
+		)
 
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			log.Print(err)
 			s.respond(w, http.StatusBadRequest, nil)
 			return
 		}
+		req.UserID = &userID
 
 		resp, status, err := s.getHistoryHelper(r.Context(), req)
 		if err != nil {

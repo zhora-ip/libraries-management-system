@@ -17,6 +17,7 @@ type bookService interface {
 
 type userService interface {
 	Add(context.Context, *svc.AddUserRequest) (*svc.AddUserResponse, error)
+	GenerateToken(context.Context, *svc.GenerateTokenRequest) (*svc.GenerateTokenResponse, error)
 }
 
 type physBookService interface {
@@ -31,21 +32,27 @@ type orderService interface {
 	Submit(any, chan<- error)
 }
 
+type tkManager interface {
+	Parse(accessToken string) (int64, int32, error)
+}
+
 type Server struct {
 	router    *mux.Router
 	bService  bookService
 	uService  userService
 	pbService physBookService
 	oService  orderService
+	tkManager tkManager
 }
 
-func New(bs bookService, us userService, pbs physBookService, os orderService) *Server {
+func New(bs bookService, us userService, pbs physBookService, os orderService, tm tkManager) *Server {
 	srv := &Server{
 		router:    mux.NewRouter(),
 		bService:  bs,
 		uService:  us,
 		pbService: pbs,
 		oService:  os,
+		tkManager: tm,
 	}
 
 	srv.configureRouter()
