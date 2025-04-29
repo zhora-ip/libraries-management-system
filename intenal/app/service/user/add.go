@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	expirationTime = 24 * 7 * 365
+	expirationTime = 24 * 365
 )
 
 func (s *UserService) Add(ctx context.Context, req *svc.AddUserRequest) (*svc.AddUserResponse, error) {

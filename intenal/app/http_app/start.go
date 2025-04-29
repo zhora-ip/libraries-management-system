@@ -33,7 +33,8 @@ import (
 
 const (
 	timeoutCheckExpired = 1
-	serverPort          = "8000"
+	insecurePort        = "8000"
+	securePort          = "8001"
 )
 
 type shutdowner interface {
@@ -111,10 +112,15 @@ func Start(cfg *Config, kafkaCfg *kafkaservice.Config) error {
 
 func runServer(srv *server.Server, shutdowners []shutdowner) error {
 
-	errCh := make(chan error, 1)
+	errCh := make(chan error, 2)
 	go func() {
 		log.Print("Server is up and running")
-		errCh <- http.ListenAndServe(":"+serverPort, srv)
+		errCh <- http.ListenAndServe(":"+insecurePort, srv)
+	}()
+
+	// FIXME:
+	go func() {
+		errCh <- http.ListenAndServeTLS(":"+securePort, "./ssl/server.crt", "./ssl/server.key", srv)
 	}()
 
 	sigCh := make(chan os.Signal, 1)

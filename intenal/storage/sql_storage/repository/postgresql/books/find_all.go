@@ -9,8 +9,18 @@ import (
 )
 
 func (r *BooksRepo) FindAll(ctx context.Context, req *svc.FindAllBooksRequest) (*svc.FindAllBooksResponse, error) {
-	resp := &svc.FindAllBooksResponse{}
-	err := r.db.Select(ctx, &resp.Data, `SELECT * FROM books;`)
+	var (
+		resp  = &svc.FindAllBooksResponse{}
+		query = `SELECT * FROM books`
+		args  = []any{}
+	)
+
+	if req.ID != nil {
+		query += ` WHERE id = $1`
+		args = append(args, req.ID)
+	}
+
+	err := r.db.Select(ctx, &resp.Data, query, args...)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "no rows in result set") {

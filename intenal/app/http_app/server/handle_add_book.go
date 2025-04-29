@@ -14,7 +14,9 @@ import (
 func (s *Server) HandleAddBook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		role := r.Context().Value(ctxKeyUserRole{}).(int32)
+		var (
+			role = r.Context().Value(ctxKeyUserRole{}).(int32)
+		)
 		if role != int32(models.UserRoleLibrarian) && role != int32(models.UserRoleAdmin) {
 			s.error(w, http.StatusForbidden, models.ErrInvalidRole)
 			return

@@ -60,17 +60,44 @@ func (s *Server) userIdentity(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		token := r.Header.Get("Authorization")
+		log.Print(token)
 
-		user, role, err := s.tkManager.Parse(token)
-		if err != nil {
-			log.Print(err)
-			s.error(w, http.StatusBadRequest, nil)
+		auth := strings.Split(token, " ")
+		switch {
+		case len(auth) != 2:
+			s.error(w, http.StatusUnauthorized, nil)
+			return
+		case auth[0] != "Bearer":
+			s.error(w, http.StatusUnauthorized, nil)
 			return
 		}
 
-		ctx := context.WithValue(context.Background(), ctxKeyUserID{}, user)
+		user, role, err := s.tkManager.Parse(auth[1])
+		if err != nil {
+			log.Print(err)
+			s.error(w, http.StatusUnauthorized, nil)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), ctxKeyUserID{}, user)
 		ctx = context.WithValue(ctx, ctxKeyUserRole{}, role)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func (s *Server) cors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }

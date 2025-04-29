@@ -10,10 +10,12 @@ import (
 type usersRepo interface {
 	Add(context.Context, *models.User) (int64, error)
 	FindByLogin(context.Context, string) (*models.User, error)
+	FindByID(context.Context, int64) (*models.User, error)
 }
 
 type libCardsRepo interface {
 	Add(context.Context, *models.LibCard) (int64, error)
+	FindByUserID(context.Context, int64) (*models.LibCard, error)
 }
 
 type txManager interface {

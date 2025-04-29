@@ -15,6 +15,7 @@ type AddBookResponse struct {
 }
 
 type FindAllBooksRequest struct {
+	ID *int64 `json:"id"`
 }
 
 type FindAllBooksResponse struct {

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
@@ -15,6 +17,20 @@ type AddUserRequest struct {
 
 type AddUserResponse struct {
 	ID int64 `json:"id"`
+}
+
+type FindUserByIDRequest struct {
+	ID int64 `json:"id"`
+}
+
+type FindUserByIDResponse struct {
+	Login       string     `json:"login"`
+	FullName    string     `json:"full_name"`
+	PhoneNumber string     `json:"phone_number"`
+	Email       string     `json:"email"`
+	Role        string     `json:"role"`
+	Code        string     `json:"lib_card"`
+	ExpiresAt   *time.Time `json:"expires_at"`
 }
 
 type GenerateTokenRequest struct {
