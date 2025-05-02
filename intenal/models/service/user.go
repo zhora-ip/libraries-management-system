@@ -33,6 +33,26 @@ type FindUserByIDResponse struct {
 	ExpiresAt   *time.Time `json:"expires_at"`
 }
 
+type DeleteUserRequest struct {
+	ID int64 `json:"id"`
+}
+
+type DeleteUserResponse struct {
+}
+
+type UpdateUserRequest struct {
+	ID                int64   `json:"id"`
+	Login             *string `json:"login"`
+	Password          *string `json:"password"`
+	EncryptedPassword *string `json:"-"`
+	FullName          *string `json:"full_name"`
+	PhoneNumber       *string `json:"phone_number"`
+	Email             *string `json:"email"`
+}
+
+type UpdateUserResponse struct {
+}
+
 type GenerateTokenRequest struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`

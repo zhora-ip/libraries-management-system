@@ -29,8 +29,10 @@ func (s *Server) HandleSignIn() http.HandlerFunc {
 			switch {
 			case errors.Is(err, models.ErrValidationFailed):
 				s.error(w, http.StatusBadRequest, models.ErrValidationFailed)
+				return
 			case errors.Is(err, models.ErrForbidden):
 				s.error(w, http.StatusForbidden, nil)
+				return
 			}
 
 			s.error(w, http.StatusInternalServerError, nil)

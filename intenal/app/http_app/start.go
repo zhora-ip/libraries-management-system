@@ -79,7 +79,7 @@ func Start(cfg *Config, kafkaCfg *kafkaservice.Config) error {
 	shutdowners = append(shutdowners, wPool2)
 
 	bService := bookservice.New(bRepo, db.GetTM())
-	uService := userservice.New(uRepo, lcRepo, db.GetTM(), tkManager)
+	uService := userservice.New(uRepo, lcRepo, oRepo, db.GetTM(), tkManager)
 	pbService := physbookservice.New(pbRepo, lRepo, db.GetTM())
 	oService := orderservice.New(pbRepo, oRepo, lcRepo, db.GetTM(), wPool2)
 
@@ -114,12 +114,12 @@ func runServer(srv *server.Server, shutdowners []shutdowner) error {
 
 	errCh := make(chan error, 2)
 	go func() {
-		log.Print("Server is up and running")
+		log.Printf("http-server is up and running on %s", insecurePort)
 		errCh <- http.ListenAndServe(":"+insecurePort, srv)
 	}()
 
-	// FIXME:
 	go func() {
+		log.Printf("https-server is up and running on %s", securePort)
 		errCh <- http.ListenAndServeTLS(":"+securePort, "./ssl/server.crt", "./ssl/server.key", srv)
 	}()
 

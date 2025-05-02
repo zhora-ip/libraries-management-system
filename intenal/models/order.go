@@ -9,14 +9,14 @@ const (
 	StatusAvailable               // 1
 	StatusExpired                 // 2
 	StatusIssued                  // 3
-	StatusCanceled
-	StatusReturned
-	Unknown   = "UNKNOWN"
-	Available = "AVAILABLE"
-	Expired   = "EXPIRED"
-	Issued    = "ISSUED"
-	Canceled  = "CANCELED"
-	Returned  = "RETURNED"
+	StatusCanceled                // 4
+	StatusReturned                // 5
+	Unknown         = "UNKNOWN"
+	Available       = "AVAILABLE"
+	Expired         = "EXPIRED"
+	Issued          = "ISSUED"
+	Canceled        = "CANCELED"
+	Returned        = "RETURNED"
 )
 
 func (s Status) String() string {

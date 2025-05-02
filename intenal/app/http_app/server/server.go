@@ -19,6 +19,8 @@ type userService interface {
 	Add(context.Context, *svc.AddUserRequest) (*svc.AddUserResponse, error)
 	GenerateToken(context.Context, *svc.GenerateTokenRequest) (*svc.GenerateTokenResponse, error)
 	FindByID(context.Context, *svc.FindUserByIDRequest) (*svc.FindUserByIDResponse, error)
+	Delete(context.Context, *svc.DeleteUserRequest) (*svc.DeleteUserResponse, error)
+	Update(context.Context, *svc.UpdateUserRequest) (*svc.UpdateUserResponse, error)
 }
 
 type physBookService interface {

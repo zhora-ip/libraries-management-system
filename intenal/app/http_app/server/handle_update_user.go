@@ -11,33 +11,39 @@ import (
 	svc "github.com/zhora-ip/libraries-management-system/intenal/models/service"
 )
 
-func (s *Server) HandleAddUser() http.HandlerFunc {
+func (s *Server) HandleUpdateUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		req := &svc.AddUserRequest{}
+		var (
+			req    = &svc.UpdateUserRequest{}
+			userID = r.Context().Value(ctxKeyUserID{}).(int64)
+		)
 
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			log.Print(err)
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			s.error(w, http.StatusBadRequest, nil)
 			return
 		}
+		req.ID = userID
 
-		resp, status, err := s.handleAddUserHelper(r.Context(), req)
-		if resp != nil {
-			s.respond(w, status, resp)
+		_, status, err := s.handleUpdateUserHelper(r.Context(), req)
+		if err != nil {
+			s.error(w, status, err)
 			return
 		}
 
-		s.error(w, status, err)
-
+		s.respond(w, http.StatusOK, nil)
 	}
 }
 
-func (s *Server) handleAddUserHelper(ctx context.Context, req *svc.AddUserRequest) (*svc.AddUserResponse, int, error) {
+func (s *Server) handleUpdateUserHelper(ctx context.Context, req *svc.UpdateUserRequest) (*svc.UpdateUserResponse, int, error) {
 
-	resp, err := s.uService.Add(ctx, req)
+	resp, err := s.uService.Update(ctx, req)
 	if err != nil {
 		log.Print(err)
 		switch {
+		case errors.Is(err, models.ErrRepeatedPassword):
+			return nil, http.StatusBadRequest, err
+		case errors.Is(err, models.ErrObjectNotFound):
+			return nil, http.StatusNotFound, models.ErrObjectNotFound
 		case errors.Is(err, models.ErrValidationFailed):
 			return nil, http.StatusBadRequest, models.ErrValidationFailed
 		case errors.Is(err, models.ErrEncryptionFailed):
@@ -52,5 +58,4 @@ func (s *Server) handleAddUserHelper(ctx context.Context, req *svc.AddUserReques
 		return nil, http.StatusInternalServerError, models.ErrInternal
 	}
 	return resp, http.StatusOK, nil
-
 }

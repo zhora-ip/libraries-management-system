@@ -26,4 +26,8 @@ var (
 	ErrLibCardExpired           = errors.New("library card expired")
 	ErrIncorrectOrderStatus     = errors.New("incorrect order status")
 	ErrNoRows                   = errors.New("now rows")
+	ErrPendingOrders            = errors.New("there are pending orders")
+	ErrRepeatedPassword         = errors.New("password must be different from previous")
+
+	ErrInternal = errors.New("internal error")
 )

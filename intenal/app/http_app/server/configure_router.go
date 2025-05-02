@@ -15,7 +15,9 @@ func (s *Server) configureRouter() {
 	// TODO: update profile, update libcard, book, library
 	// delete
 
-	p.HandleFunc("/profile", s.HandleGetProfile()).Methods(http.MethodGet)
+	p.HandleFunc("/user", s.HandleGetUser()).Methods(http.MethodGet)
+	p.HandleFunc("/user", s.HandleUpdateUser()).Methods(http.MethodPatch)
+	p.HandleFunc("/user", s.HandleDeleteUser()).Methods(http.MethodDelete)
 
 	p.HandleFunc("/books", s.HandleAddBook()).Methods(http.MethodPost)
 	p.HandleFunc("/books", s.HandleGetBooks()).Methods(http.MethodGet)
@@ -27,7 +29,7 @@ func (s *Server) configureRouter() {
 	p.HandleFunc("/physbooks", s.HandleGetPhysBooks()).Methods(http.MethodGet, http.MethodOptions)
 
 	p.HandleFunc("/orders", s.HandleAddOrder()).Methods(http.MethodPost)
-	p.HandleFunc("/issue", s.HandleIssueOrder()).Methods(http.MethodPost)
-	p.HandleFunc("/return", s.HandleReturnOrder()).Methods(http.MethodPost)
+	p.HandleFunc("/issue", s.HandleIssueOrder()).Methods(http.MethodPatch)
+	p.HandleFunc("/return", s.HandleReturnOrder()).Methods(http.MethodPatch)
 	p.HandleFunc("/history", s.HandleGetHistory()).Methods(http.MethodPost, http.MethodOptions)
 }

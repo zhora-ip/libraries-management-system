@@ -13,8 +13,8 @@ type Book struct {
 	Genre       string     `json:"genre" db:"genre"`
 	Description string     `json:"description" db:"description"`
 	AgeLimit    int32      `json:"age_limit" db:"age_limit"`
-	Created_at  *time.Time `json:"created_at" db:"created_at"`
-	Updated_at  *time.Time `json:"updated_at" db:"updated_at"`
+	CreatedAt   *time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt   *time.Time `json:"updated_at" db:"updated_at"`
 }
 
 func (b *Book) Validate() error {

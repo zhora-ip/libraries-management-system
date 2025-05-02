@@ -49,7 +49,7 @@ func (s *Server) handleAddOrderHelper(ctx context.Context, req *svc.AddOrderRequ
 		case errors.Is(err, models.ErrAlreadyUnavailable):
 			return nil, http.StatusBadRequest, models.ErrAlreadyUnavailable
 		}
-		return nil, http.StatusInternalServerError, nil
+		return nil, http.StatusInternalServerError, models.ErrInternal
 	}
 	return resp, http.StatusOK, nil
 

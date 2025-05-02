@@ -50,7 +50,7 @@ func (s *Server) HandleGetHistory() http.HandlerFunc {
 			w,
 			http.StatusOK,
 			map[string]any{
-				"data":         resp.Data,
+				"orders":       resp.Data,
 				"first_cursor": resp.Data[0].UpdatedAt.UTC(),
 				"last_cursor":  resp.Data[len(resp.Data)-1].UpdatedAt.UTC(),
 			},
@@ -66,9 +66,9 @@ func (s *Server) getHistoryHelper(ctx context.Context, req *svc.FindAllOrdersReq
 		log.Print(err)
 		switch {
 		case errors.Is(err, models.ErrObjectNotFound):
-			return nil, http.StatusNotFound, models.ErrObjectNotFound
+			return nil, http.StatusNoContent, models.ErrObjectNotFound
 		}
-		return nil, http.StatusInternalServerError, nil
+		return nil, http.StatusInternalServerError, models.ErrInternal
 	}
 
 	return resp, http.StatusOK, nil

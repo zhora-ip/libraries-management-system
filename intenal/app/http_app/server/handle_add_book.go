@@ -50,7 +50,7 @@ func (s *Server) handleAddBookHelper(ctx context.Context, req *svc.AddBookReques
 		case errors.Is(err, models.ErrValidationFailed):
 			return nil, http.StatusBadRequest, models.ErrValidationFailed
 		}
-		return nil, http.StatusInternalServerError, nil
+		return nil, http.StatusInternalServerError, models.ErrInternal
 	}
 	return resp, http.StatusOK, nil
 

@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	tokenTTL = 12 * time.Hour
+	tokenTTL = 30 * 24 * time.Hour
 )
 
 func (s *UserService) GenerateToken(ctx context.Context, req *svc.GenerateTokenRequest) (*svc.GenerateTokenResponse, error) {
