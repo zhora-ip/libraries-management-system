@@ -33,7 +33,7 @@ func (s *UserService) FindByID(ctx context.Context, req *svc.FindUserByIDRequest
 
 	return &svc.FindUserByIDResponse{
 		Login:       user.Login,
-		FullName:    user.PhoneNumber,
+		FullName:    user.FullName,
 		PhoneNumber: user.PhoneNumber,
 		Email:       user.Email,
 		Role:        user.Role.String(),

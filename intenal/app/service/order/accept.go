@@ -4,20 +4,14 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
 	svc "github.com/zhora-ip/libraries-management-system/intenal/models/service"
 )
 
-const (
-	expirationTimeIssue = 24 * 7
-)
-
-func (s *OrderService) Issue(ctx context.Context, req *svc.IssueOrderRequest) (*svc.IssueOrderResponse, error) {
+func (s *OrderService) Accept(ctx context.Context, req *svc.AcceptOrderRequest) (*svc.AcceptOrderResponse, error) {
 	var (
-		resp      *svc.IssueOrderResponse
-		expiresAt = time.Now().Add(expirationTimeIssue)
+		resp *svc.AcceptOrderResponse
 	)
 	if err := s.txManager.RunSerializable(ctx, func(ctxTx context.Context) error {
 		order, err := s.oRepo.FindByID(ctxTx, req.ID)
@@ -25,22 +19,19 @@ func (s *OrderService) Issue(ctx context.Context, req *svc.IssueOrderRequest) (*
 		switch {
 		case err != nil:
 			return fmt.Errorf("s.oRepo.FindByID: %w", err)
-		case order.Status != models.StatusAvailable:
+		case order.Status != models.StatusReturned:
 			return models.ErrIncorrectOrderStatus
-		case order.ExpiresAt.Before(time.Now()):
-			return models.ErrAlreadyExpired
 		}
 
-		order.ExpiresAt = &expiresAt
-		err = s.oRepo.MarkAsIssued(ctxTx, order)
+		err = s.oRepo.MarkAsAccepted(ctxTx, req.ID)
 		if err != nil {
-			return fmt.Errorf("s.oRepo.MarkAsIssued: %w", err)
+			return fmt.Errorf("s.oRepo.MarkAsAccepted: %w", err)
 		}
 
 		audit := &models.AuditStatusChange{
 			ID:  strconv.Itoa(int(order.ID)),
 			Old: order.Status.String(),
-			New: models.StatusIssued.String(),
+			New: models.StatusAccepted.String(),
 		}
 
 		errCh := make(chan error, 1)

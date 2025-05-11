@@ -17,6 +17,7 @@ var (
 	ErrBoolParse = errors.New("incorrect bool")
 
 	ErrBlankOrderIDs            = errors.New("order ids cannot be blank")
+	ErrBlankUserID              = errors.New("user id cannot be blank")
 	ErrEncryptionFailed         = errors.New("password encryption failed")
 	ErrEmailAlreadyExists       = errors.New("such email already exists")
 	ErrLoginAlreadyExists       = errors.New("such login already exists")
@@ -28,6 +29,7 @@ var (
 	ErrNoRows                   = errors.New("now rows")
 	ErrPendingOrders            = errors.New("there are pending orders")
 	ErrRepeatedPassword         = errors.New("password must be different from previous")
+	ErrCardNotExpired           = errors.New("card have not expired yet")
 
 	ErrInternal = errors.New("internal error")
 )

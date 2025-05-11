@@ -20,6 +20,7 @@ type ordersRepo interface {
 	FindCanceled(context.Context) ([]*models.Order, error)
 	MarkAsCanceled(context.Context, int64) error
 	MarkAsReturned(context.Context, int64) error
+	MarkAsAccepted(context.Context, int64) error
 	FindAll(context.Context, *svc.FindAllOrdersRequest) ([]*models.Order, error)
 }
 

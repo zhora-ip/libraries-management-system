@@ -11,12 +11,14 @@ const (
 	StatusIssued                  // 3
 	StatusCanceled                // 4
 	StatusReturned                // 5
-	Unknown         = "UNKNOWN"
-	Available       = "AVAILABLE"
-	Expired         = "EXPIRED"
-	Issued          = "ISSUED"
-	Canceled        = "CANCELED"
-	Returned        = "RETURNED"
+	StatusAccepted
+	Unknown   = "UNKNOWN"
+	Available = "AVAILABLE"
+	Expired   = "EXPIRED"
+	Issued    = "ISSUED"
+	Canceled  = "CANCELED"
+	Returned  = "RETURNED"
+	Accepted  = "ACCEPTED"
 )
 
 func (s Status) String() string {
@@ -27,6 +29,7 @@ func (s Status) String() string {
 		Issued,
 		Canceled,
 		Returned,
+		Accepted,
 	}[s]
 }
 

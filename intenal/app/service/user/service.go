@@ -19,6 +19,7 @@ type libCardsRepo interface {
 	Add(context.Context, *models.LibCard) (int64, error)
 	FindByUserID(context.Context, int64) (*models.LibCard, error)
 	DeleteByUserID(context.Context, int64) error
+	Extend(context.Context, int64, time.Time) error
 }
 
 type ordersRepo interface {

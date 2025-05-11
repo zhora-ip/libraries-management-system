@@ -48,7 +48,7 @@ func (s *Server) logger(next http.Handler) http.Handler {
 			Code: strconv.Itoa(recorder.StatusCode()),
 		}
 
-		if r.Method != http.MethodGet && len(recorder.Body()) > 0 {
+		if len(recorder.Body()) > 0 {
 			auditResponse.Body = strings.TrimSuffix(recorder.Body(), "\n")
 		}
 

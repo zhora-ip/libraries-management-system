@@ -21,6 +21,8 @@ type userService interface {
 	FindByID(context.Context, *svc.FindUserByIDRequest) (*svc.FindUserByIDResponse, error)
 	Delete(context.Context, *svc.DeleteUserRequest) (*svc.DeleteUserResponse, error)
 	Update(context.Context, *svc.UpdateUserRequest) (*svc.UpdateUserResponse, error)
+	FindLibCard(context.Context, *svc.FindLibCardRequest) (*svc.FindLibCardResponse, error)
+	ExtendLibCard(context.Context, *svc.ExtendLibCardRequest) error
 }
 
 type physBookService interface {
@@ -31,8 +33,14 @@ type orderService interface {
 	Add(context.Context, *svc.AddOrderRequest) (*svc.AddOrderResponse, error)
 	Issue(context.Context, *svc.IssueOrderRequest) (*svc.IssueOrderResponse, error)
 	Return(context.Context, *svc.ReturnOrderRequest) (*svc.ReturnOrderResponse, error)
+	Accept(context.Context, *svc.AcceptOrderRequest) (*svc.AcceptOrderResponse, error)
 	FindAll(context.Context, *svc.FindAllOrdersRequest) (*svc.FindAllOrdersResponse, error)
 	Submit(any, chan<- error)
+}
+
+type cache interface {
+	Set(context.Context, string, *models.Response) error
+	Get(context.Context, string) (*models.Response, error)
 }
 
 type tkManager interface {
@@ -46,9 +54,10 @@ type Server struct {
 	pbService physBookService
 	oService  orderService
 	tkManager tkManager
+	rCache    cache
 }
 
-func New(bs bookService, us userService, pbs physBookService, os orderService, tm tkManager) *Server {
+func New(bs bookService, us userService, pbs physBookService, os orderService, tm tkManager, ch cache) *Server {
 	srv := &Server{
 		router:    mux.NewRouter(),
 		bService:  bs,
@@ -56,6 +65,7 @@ func New(bs bookService, us userService, pbs physBookService, os orderService, t
 		pbService: pbs,
 		oService:  os,
 		tkManager: tm,
+		rCache:    ch,
 	}
 
 	srv.configureRouter()

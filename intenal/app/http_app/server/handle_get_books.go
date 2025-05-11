@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -28,27 +29,51 @@ func (s *Server) HandleGetBooks() http.HandlerFunc {
 				Limit:    getBooksLimit,
 				Backward: false,
 			}
-			err error
+			rCache    = &models.Response{}
+			bodyBytes = []byte{}
+			key       string
+			err       error
 		)
 
-		if err = json.NewDecoder(r.Body).Decode(req); err != nil {
+		bodyBytes, err = io.ReadAll(r.Body)
+		if err != nil {
 			log.Print(err)
 			s.error(w, http.StatusBadRequest, nil)
 			return
 		}
+		key = r.URL.String() + string(bodyBytes)
+
+		defer func() {
+			s.rCache.Set(r.Context(), key, rCache)
+		}()
+
+		rCache, err = s.rCache.Get(r.Context(), key)
+		if err == nil {
+			s.respond(w, rCache.Code, rCache.Data)
+			return
+		}
+
+		err = json.Unmarshal(bodyBytes, req)
+		switch {
+		case mp != nil:
+		case err != nil:
+			log.Print(err)
+			rCache = s.error(w, http.StatusBadRequest, nil)
+			return
+		}
 
 		resp, status, err := s.getBooksHelper(r.Context(), req, mp)
-		if err != nil {
-			s.error(w, status, err)
+
+		switch {
+		case err != nil:
+			rCache = s.error(w, status, err)
+			return
+		case resp == nil || len(resp.Data) == 0:
+			rCache = s.respond(w, http.StatusNoContent, nil)
 			return
 		}
 
-		if resp == nil || len(resp.Data) == 0 {
-			s.respond(w, http.StatusNoContent, nil)
-			return
-		}
-
-		s.respond(
+		rCache = s.respond(
 			w,
 			http.StatusOK,
 			map[string]any{
@@ -77,7 +102,7 @@ func (s *Server) getBooksHelper(ctx context.Context, req *svc.FindAllBooksReques
 		log.Print(err)
 		switch {
 		case errors.Is(err, models.ErrObjectNotFound):
-			return nil, http.StatusNotFound, models.ErrObjectNotFound
+			return nil, http.StatusNoContent, models.ErrObjectNotFound
 		}
 		return nil, http.StatusInternalServerError, models.ErrInternal
 	}

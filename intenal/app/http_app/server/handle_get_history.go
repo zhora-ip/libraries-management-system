@@ -21,19 +21,24 @@ func (s *Server) HandleGetHistory() http.HandlerFunc {
 
 		var (
 			userID = r.Context().Value(ctxKeyUserID{}).(int64)
+			role   = r.Context().Value(ctxKeyUserRole{}).(int32)
 			req    = &svc.FindAllOrdersRequest{
 				Cursor:   time.Now(),
 				Limit:    getHistoryLimit,
 				Backward: false,
 			}
+			err error
 		)
 
-		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		err = json.NewDecoder(r.Body).Decode(req)
+		switch {
+		case err != nil:
 			log.Print(err)
 			s.respond(w, http.StatusBadRequest, nil)
 			return
+		case role == int32(models.UserRoleReader):
+			req.UserID = &userID
 		}
-		req.UserID = &userID
 
 		resp, status, err := s.getHistoryHelper(r.Context(), req)
 		if err != nil {
@@ -42,7 +47,7 @@ func (s *Server) HandleGetHistory() http.HandlerFunc {
 		}
 
 		if resp == nil || len(resp.Data) == 0 {
-			s.respond(w, http.StatusNoContent, nil)
+			s.respond(w, http.StatusNoContent, &svc.FindAllBooksResponse{})
 			return
 		}
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"slices"
 
 	"github.com/jackc/pgx"
@@ -53,7 +52,7 @@ func (r *BooksRepo) FindAll(ctx context.Context, req *svc.FindAllBooksRequest) (
 	}
 
 	if req.AgeLimit != nil {
-		ageCondition = fmt.Sprintf(" AND age_limit >= $%d", i)
+		ageCondition = fmt.Sprintf(" AND age_limit <= $%d", i)
 		args = append(args, *req.AgeLimit)
 		i++
 	}
@@ -71,7 +70,6 @@ func (r *BooksRepo) FindAll(ctx context.Context, req *svc.FindAllBooksRequest) (
 		limit,
 	)
 
-	log.Print(query)
 	err := r.db.Select(ctx, &books, query, args...)
 
 	if err != nil {

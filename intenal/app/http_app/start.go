@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	kafkaservice "github.com/zhora-ip/libraries-management-system/infrastructure/kafka"
 	kafkaConsumer "github.com/zhora-ip/libraries-management-system/infrastructure/kafka/consumer"
 	kafkaProducer "github.com/zhora-ip/libraries-management-system/infrastructure/kafka/producer"
 	auth "github.com/zhora-ip/libraries-management-system/pkg/token_manager"
@@ -20,6 +19,7 @@ import (
 	orderservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/order"
 	physbookservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/phys_books"
 	userservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/user"
+	"github.com/zhora-ip/libraries-management-system/intenal/storage/redis"
 	sqldb "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/db"
 	auditlogs "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/audit_logs"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/books"
@@ -41,7 +41,7 @@ type shutdowner interface {
 	ShutDown()
 }
 
-func Start(cfg *Config, kafkaCfg *kafkaservice.Config) error {
+func Start(cfg *Config) error {
 	var (
 		shutdowners []shutdowner
 	)
@@ -83,7 +83,7 @@ func Start(cfg *Config, kafkaCfg *kafkaservice.Config) error {
 	pbService := physbookservice.New(pbRepo, lRepo, db.GetTM())
 	oService := orderservice.New(pbRepo, oRepo, lcRepo, db.GetTM(), wPool2)
 
-	p, err := kafkaProducer.New(kafkaCfg)
+	p, err := kafkaProducer.New(cfg.KafkaCfg)
 	if err != nil {
 		log.Print(err)
 	}
@@ -93,7 +93,7 @@ func Start(cfg *Config, kafkaCfg *kafkaservice.Config) error {
 	go aProducer.Produce(ctx)
 
 	for i := 1; i <= 3; i++ {
-		c, err := kafkaConsumer.New(kafkaCfg)
+		c, err := kafkaConsumer.New(cfg.KafkaCfg)
 		if err != nil {
 			log.Print(err)
 			continue
@@ -103,7 +103,9 @@ func Start(cfg *Config, kafkaCfg *kafkaservice.Config) error {
 		go aConsumer.Consume(ctx)
 	}
 
-	srv := server.New(bService, uService, pbService, oService, tkManager)
+	cache := redis.New(cfg.RedisCfg)
+
+	srv := server.New(bService, uService, pbService, oService, tkManager, cache)
 
 	go runCanceledOrdersCron(ctx, oService)
 	err = runServer(srv, shutdowners)

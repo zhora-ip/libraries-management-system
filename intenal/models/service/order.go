@@ -31,6 +31,14 @@ type ReturnOrderRequest struct {
 type ReturnOrderResponse struct {
 }
 
+type AcceptOrderRequest struct {
+	ID     int64 `json:"id"`
+	UserID int64 `json:"user_id"`
+}
+
+type AcceptOrderResponse struct {
+}
+
 type FindAllOrdersRequest struct {
 	Cursor       time.Time `json:"cursor"`
 	Limit        int64     `json:"limit"`
@@ -45,5 +53,3 @@ type FindAllOrdersRequest struct {
 type FindAllOrdersResponse struct {
 	Data []*models.Order `json:"data"`
 }
-
-

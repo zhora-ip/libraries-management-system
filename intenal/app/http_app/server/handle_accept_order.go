@@ -11,12 +11,11 @@ import (
 	svc "github.com/zhora-ip/libraries-management-system/intenal/models/service"
 )
 
-func (s *Server) HandleIssueOrder() http.HandlerFunc {
+func (s *Server) HandleAcceptOrder() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			userID = r.Context().Value(ctxKeyUserID{}).(int64)
-			role   = r.Context().Value(ctxKeyUserRole{}).(int32)
-			req    = &svc.IssueOrderRequest{}
+			role = r.Context().Value(ctxKeyUserRole{}).(int32)
+			req  = &svc.AcceptOrderRequest{}
 		)
 
 		if role != int32(models.UserRoleLibrarian) && role != int32(models.UserRoleAdmin) {
@@ -29,9 +28,8 @@ func (s *Server) HandleIssueOrder() http.HandlerFunc {
 			log.Print(err)
 			return
 		}
-		req.UserID = userID
 
-		resp, status, err := s.handleIssueOrderHelper(r.Context(), req)
+		resp, status, err := s.handleAcceptOrderHelper(r.Context(), req)
 		if resp != nil {
 			s.respond(w, status, resp)
 			return
@@ -42,9 +40,9 @@ func (s *Server) HandleIssueOrder() http.HandlerFunc {
 	}
 }
 
-func (s *Server) handleIssueOrderHelper(ctx context.Context, req *svc.IssueOrderRequest) (*svc.IssueOrderResponse, int, error) {
+func (s *Server) handleAcceptOrderHelper(ctx context.Context, req *svc.AcceptOrderRequest) (*svc.AcceptOrderResponse, int, error) {
 
-	resp, err := s.oService.Issue(ctx, req)
+	resp, err := s.oService.Accept(ctx, req)
 	if err != nil {
 		log.Print(err)
 		switch {
@@ -54,10 +52,6 @@ func (s *Server) handleIssueOrderHelper(ctx context.Context, req *svc.IssueOrder
 			return nil, http.StatusBadRequest, models.ErrNoRows
 		case errors.Is(err, models.ErrIncorrectOrderStatus):
 			return nil, http.StatusBadRequest, models.ErrIncorrectOrderStatus
-		case errors.Is(err, models.ErrAlreadyExpired):
-			return nil, http.StatusBadRequest, models.ErrAlreadyExpired
-		case errors.Is(err, models.ErrForbidden):
-			return nil, http.StatusForbidden, models.ErrForbidden
 		}
 		return nil, http.StatusInternalServerError, nil
 	}
