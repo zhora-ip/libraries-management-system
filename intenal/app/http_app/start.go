@@ -21,11 +21,13 @@ import (
 	userservice "github.com/zhora-ip/libraries-management-system/intenal/app/service/user"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/redis"
 	sqldb "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/db"
+	in_memory "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/cache/in_memory/orders"
 	auditlogs "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/audit_logs"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/books"
 	libcards "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/lib_cards"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/libraries"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/orders"
+	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/orders_cached"
 	physbooks "github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/physical_books"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/tasks"
 	"github.com/zhora-ip/libraries-management-system/intenal/storage/sql_storage/repository/postgresql/users"
@@ -69,6 +71,12 @@ func Start(cfg *Config) error {
 	pbRepo := physbooks.NewPhysBooks(db)
 	oRepo := orders.NewOrders(db)
 
+	ocRepo := orders_cached.New(oRepo, in_memory.New())
+	_, err = ocRepo.FindActive(ctx)
+	if err != nil {
+		log.Print(err)
+	}
+
 	wPool := audit.NewWP(aRepo, false)
 	wPool.SetNext(audit.NewWP(nil, true))
 	wPool.Run()
@@ -81,7 +89,7 @@ func Start(cfg *Config) error {
 	bService := bookservice.New(bRepo, db.GetTM())
 	uService := userservice.New(uRepo, lcRepo, oRepo, db.GetTM(), tkManager)
 	pbService := physbookservice.New(pbRepo, lRepo, db.GetTM())
-	oService := orderservice.New(pbRepo, oRepo, lcRepo, db.GetTM(), wPool2)
+	oService := orderservice.New(pbRepo, ocRepo, lcRepo, db.GetTM(), wPool2)
 
 	p, err := kafkaProducer.New(cfg.KafkaCfg)
 	if err != nil {

@@ -11,6 +11,7 @@ require (
 	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v4 v4.18.3
+	github.com/redis/go-redis/v9 v9.8.0
 	golang.org/x/crypto v0.36.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -30,7 +31,6 @@ require (
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/redis/go-redis/v9 v9.8.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/net v0.37.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
