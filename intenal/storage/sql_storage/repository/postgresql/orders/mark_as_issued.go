@@ -19,7 +19,9 @@ func (r *OrdersRepo) MarkAsIssued(ctx context.Context, order *models.Order) erro
 		`
 	)
 	tag, err := r.db.Exec(ctx, query, models.StatusIssued, order.ExpiresAt, order.ID)
-
+	if err != nil {
+		return err
+	}
 	if tag.RowsAffected() == 0 {
 		return models.ErrNoRows
 	}

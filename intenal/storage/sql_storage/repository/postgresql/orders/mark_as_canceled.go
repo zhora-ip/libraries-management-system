@@ -18,6 +18,9 @@ func (r *OrdersRepo) MarkAsCanceled(ctx context.Context, ID int64) error {
 		`
 	)
 	tag, err := r.db.Exec(ctx, query, models.StatusCanceled, ID)
+	if err != nil {
+		return err
+	}
 	if tag.RowsAffected() == 0 {
 		return models.ErrNoRows
 	}

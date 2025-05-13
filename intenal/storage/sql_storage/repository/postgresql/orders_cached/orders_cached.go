@@ -21,8 +21,10 @@ type repo interface {
 	FindBlockedByUserID(context.Context, int64) ([]*models.Order, error)
 	FindByID(context.Context, int64) (*models.Order, error)
 	FindCanceled(context.Context) ([]*models.Order, error)
+	FindExpired(context.Context) ([]*models.Order, error)
 	MarkAsAccepted(context.Context, int64) error
 	MarkAsCanceled(context.Context, int64) error
+	MarkAsExpired(context.Context, int64) error
 	MarkAsIssued(context.Context, *models.Order) error
 	MarkAsReturned(context.Context, int64) error
 }

@@ -37,6 +37,7 @@ type User struct {
 	FullName          string     `db:"full_name"`
 	PhoneNumber       string     `db:"phone_number"`
 	Email             string     `db:"email"`
+	Verified          bool       `db:"verified"`
 	Role              UserRole   `db:"role"`
 	CreatedAt         *time.Time `db:"created_at"`
 	UpdatedAt         *time.Time `db:"updated_at"`

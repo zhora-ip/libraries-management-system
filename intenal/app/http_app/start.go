@@ -7,10 +7,10 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	kafkaConsumer "github.com/zhora-ip/libraries-management-system/infrastructure/kafka/consumer"
 	kafkaProducer "github.com/zhora-ip/libraries-management-system/infrastructure/kafka/producer"
+	notifications "github.com/zhora-ip/libraries-management-system/pkg/notification_manager.go"
 	auth "github.com/zhora-ip/libraries-management-system/pkg/token_manager"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/app/audit"
@@ -62,6 +62,12 @@ func Start(cfg *Config) error {
 		log.Fatal(err)
 	}
 
+	nManager, err := notifications.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+	shutdowners = append(shutdowners, nManager)
+
 	aRepo := auditlogs.NewAuditLogs(db)
 	tRepo := tasks.NewTasks(db)
 	bRepo := books.NewBooks(db)
@@ -87,9 +93,9 @@ func Start(cfg *Config) error {
 	shutdowners = append(shutdowners, wPool2)
 
 	bService := bookservice.New(bRepo, db.GetTM())
-	uService := userservice.New(uRepo, lcRepo, oRepo, db.GetTM(), tkManager)
+	uService := userservice.New(uRepo, lcRepo, oRepo, db.GetTM(), tkManager, nManager)
 	pbService := physbookservice.New(pbRepo, lRepo, db.GetTM())
-	oService := orderservice.New(pbRepo, ocRepo, lcRepo, db.GetTM(), wPool2)
+	oService := orderservice.New(pbRepo, ocRepo, lcRepo, uRepo, db.GetTM(), nManager, wPool2)
 
 	p, err := kafkaProducer.New(cfg.KafkaCfg)
 	if err != nil {
@@ -115,7 +121,8 @@ func Start(cfg *Config) error {
 
 	srv := server.New(bService, uService, pbService, oService, tkManager, cache)
 
-	go runCanceledOrdersCron(ctx, oService)
+	go findCanceledOrders(ctx, oService)
+	go findExpiredOrders(ctx, oService)
 	err = runServer(srv, shutdowners)
 	return err
 }
@@ -155,21 +162,4 @@ func runServer(srv *server.Server, shutdowners []shutdowner) error {
 	log.Print("Server exited gracefully")
 
 	return nil
-}
-
-func runCanceledOrdersCron(ctx context.Context, oService *orderservice.OrderService) {
-	ticker := time.NewTicker(time.Second * timeoutCheckExpired)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			err := oService.CheckCanceled(ctx)
-			if err != nil {
-				log.Print(err)
-			}
-		}
-	}
 }

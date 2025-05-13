@@ -2,9 +2,11 @@ package userservice
 
 import (
 	"context"
+	"log"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
 	svc "github.com/zhora-ip/libraries-management-system/intenal/models/service"
+	ntfs "github.com/zhora-ip/notification-manager/pkg/pb"
 )
 
 func (s *UserService) Update(ctx context.Context, req *svc.UpdateUserRequest) (*svc.UpdateUserResponse, error) {
@@ -25,6 +27,17 @@ func (s *UserService) Update(ctx context.Context, req *svc.UpdateUserRequest) (*
 		return nil
 	}); err != nil {
 		return nil, err
+	}
+
+	if req.Email != nil {
+
+		gResp, err := s.nManager.VerifyEmail(ctx, &ntfs.VerifyEmailRequest{
+			Email: *req.Email,
+		})
+		if !gResp.Success {
+			log.Print(gResp.Message, err)
+		}
+
 	}
 
 	return nil, nil

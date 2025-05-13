@@ -19,6 +19,14 @@ type AddUserResponse struct {
 	ID int64 `json:"id"`
 }
 
+type ConfirmEmailRequest struct {
+	Token string
+}
+
+type ConfirmEmailResponse struct {
+	Message string
+}
+
 type FindUserByIDRequest struct {
 	ID int64 `json:"id"`
 }

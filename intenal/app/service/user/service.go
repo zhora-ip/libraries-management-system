@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
+	ntfs "github.com/zhora-ip/notification-manager/pkg/pb"
 )
 
 type usersRepo interface {
@@ -13,6 +14,7 @@ type usersRepo interface {
 	FindByID(context.Context, int64) (*models.User, error)
 	Delete(context.Context, int64) error
 	Update(context.Context, *models.User) error
+	MarkAsVerified(context.Context, string) error
 }
 
 type libCardsRepo interface {
@@ -34,20 +36,28 @@ type tkManager interface {
 	NewJWT(int64, int32, time.Duration) (string, error)
 }
 
+type nManager interface {
+	VerifyEmail(context.Context, *ntfs.VerifyEmailRequest) (*ntfs.VerifyEmailResponse, error)
+	ConfirmEmail(ctx context.Context, req *ntfs.ConfirmationRequest) (*ntfs.ConfirmationResponse, error)
+}
+
 type UserService struct {
 	uRepo     usersRepo
 	lcRepo    libCardsRepo
 	oRepo     ordersRepo
 	txManager txManager
 	tkManager tkManager
+	nManager  nManager
 }
 
-func New(uRepo usersRepo, lcRepo libCardsRepo, oRepo ordersRepo, tm txManager, tkm tkManager) *UserService {
+func New(uRepo usersRepo, lcRepo libCardsRepo, oRepo ordersRepo,
+	tm txManager, tkm tkManager, nm nManager) *UserService {
 	return &UserService{
 		uRepo:     uRepo,
 		lcRepo:    lcRepo,
 		oRepo:     oRepo,
 		txManager: tm,
 		tkManager: tkm,
+		nManager:  nm,
 	}
 }

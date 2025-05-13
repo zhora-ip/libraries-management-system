@@ -28,6 +28,11 @@ func (s *OrderService) Accept(ctx context.Context, req *svc.AcceptOrderRequest) 
 			return fmt.Errorf("s.oRepo.MarkAsAccepted: %w", err)
 		}
 
+		err = s.pbRepo.MarkAsAvailable(ctxTx, order.PhysicalBookID)
+		if err != nil {
+			return fmt.Errorf("s.pbRepo.MarkAsAvailable: %w", err)
+		}
+
 		audit := &models.AuditStatusChange{
 			ID:  strconv.Itoa(int(order.ID)),
 			Old: order.Status.String(),

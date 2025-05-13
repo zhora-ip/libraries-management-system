@@ -6,18 +6,18 @@ import (
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
 )
 
-func (r *OrdersRepo) MarkAsReturned(ctx context.Context, ID int64) error {
+func (r *OrdersRepo) MarkAsExpired(ctx context.Context, ID int64) error {
 	var (
 		query = `UPDATE
 					orders
 				SET
-					updated_at = now(),
-					status = $1
+					status = $1,
+					updated_at = now()
 				WHERE
 					id = $2;
 		`
 	)
-	tag, err := r.db.Exec(ctx, query, models.StatusReturned, ID)
+	tag, err := r.db.Exec(ctx, query, models.StatusExpired, ID)
 	if err != nil {
 		return err
 	}

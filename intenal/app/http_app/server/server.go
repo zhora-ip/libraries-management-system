@@ -23,6 +23,7 @@ type userService interface {
 	Update(context.Context, *svc.UpdateUserRequest) (*svc.UpdateUserResponse, error)
 	FindLibCard(context.Context, *svc.FindLibCardRequest) (*svc.FindLibCardResponse, error)
 	ExtendLibCard(context.Context, *svc.ExtendLibCardRequest) error
+	ConfirmEmail(ctx context.Context, req *svc.ConfirmEmailRequest) (*svc.ConfirmEmailResponse, error)
 }
 
 type physBookService interface {

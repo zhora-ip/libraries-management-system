@@ -36,4 +36,6 @@ func (s *Server) configureRouter() {
 	p.HandleFunc("/return", s.HandleReturnOrder()).Methods(http.MethodPatch, http.MethodOptions)
 	p.HandleFunc("/accept", s.HandleAcceptOrder()).Methods(http.MethodPatch, http.MethodOptions)
 	p.HandleFunc("/history", s.HandleGetHistory()).Methods(http.MethodPost, http.MethodOptions)
+
+	r.HandleFunc("/verify", s.HandleEmailVerification()).Methods(http.MethodGet, http.MethodOptions)
 }

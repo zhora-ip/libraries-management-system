@@ -7,6 +7,7 @@ create table if not exists users (
     full_name TEXT not null,
     phone_number TEXT unique,
     email TEXT unique,
+    verified bool not null default false,
     role INT not null,
     created_at TIMESTAMP not null default now(),
     updated_at TIMESTAMP not null default now()

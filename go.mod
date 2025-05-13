@@ -12,7 +12,9 @@ require (
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/redis/go-redis/v9 v9.8.0
+	github.com/zhora-ip/notification-manager v0.0.0-20250513170015-7440353cf402
 	golang.org/x/crypto v0.36.0
+	google.golang.org/grpc v1.72.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -33,6 +35,9 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/net v0.37.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250218202821-56aae31c358a // indirect
+	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )

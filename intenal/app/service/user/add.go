@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
 	svc "github.com/zhora-ip/libraries-management-system/intenal/models/service"
+	ntfs "github.com/zhora-ip/notification-manager/pkg/pb"
 )
 
 const (
@@ -59,6 +61,13 @@ func (s *UserService) Add(ctx context.Context, req *svc.AddUserRequest) (*svc.Ad
 		return nil
 	}); err != nil {
 		return nil, fmt.Errorf("s.txManager.RunSerializable: %w", err)
+	}
+
+	gResp, err := s.nManager.VerifyEmail(ctx, &ntfs.VerifyEmailRequest{
+		Email: req.Email,
+	})
+	if !gResp.Success {
+		log.Print(gResp.Message, err)
 	}
 
 	return resp, nil

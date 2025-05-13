@@ -2,6 +2,7 @@ package orderservice
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"github.com/zhora-ip/libraries-management-system/intenal/models"
@@ -10,12 +11,12 @@ import (
 func (s *OrderService) CheckCanceled(ctx context.Context) error {
 
 	orders, err := s.oRepo.FindCanceled(ctx)
-	if err != nil && err != models.ErrObjectNotFound {
+	if err != nil && !errors.Is(err, models.ErrObjectNotFound) {
 		return err
 	}
 
 	for _, order := range orders {
-		err := s.processOrder(ctx, order)
+		err := s.processCanceledOrder(ctx, order)
 		if err != nil {
 			return err
 		}
@@ -23,7 +24,7 @@ func (s *OrderService) CheckCanceled(ctx context.Context) error {
 	return nil
 }
 
-func (s *OrderService) processOrder(ctx context.Context, order *models.Order) error {
+func (s *OrderService) processCanceledOrder(ctx context.Context, order *models.Order) error {
 	if err := s.txManager.RunSerializable(ctx, func(ctxTx context.Context) error {
 		err := s.oRepo.MarkAsCanceled(ctxTx, order.ID)
 		if err != nil {
